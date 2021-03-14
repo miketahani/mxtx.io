@@ -106,15 +106,12 @@
       height: { type: 't', value: loadTex(`./img/venusbump.jpg`) },
       surface: { type: 't', value: loadTex(`./img/venusmap.jpg`) }
     }
-    uniforms.height.value.wrapS = THREE.ClampToEdgeWrapping
-    uniforms.surface.value.wrapT = THREE.ClampToEdgeWrapping
 
     const geometry = new THREE.SphereGeometry(128, 512, 512)
     const material = new THREE.ShaderMaterial({
       uniforms,
       vertexShader: getById('vertexShader').textContent,
-      fragmentShader: getById('fragmentShader').textContent,
-      side: THREE.DoubleSide
+      fragmentShader: getById('fragmentShader').textContent
     })
 
     const sphere = new THREE.Mesh(geometry, material)
