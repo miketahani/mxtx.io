@@ -48,24 +48,20 @@
 
   <script id="vertexShader" type="x-shader/x-vertex">
     uniform sampler2D height;
-    uniform sampler2D surface;
     uniform float scale;
     varying vec2 vUv;
-    varying float vAmount;
 
     void main () {
       vUv = uv;
-      vAmount = texture2D(height, vUv).r;
-      vec3 newPosition = position + normal * scale * vAmount;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+      float z = texture2D(height, vUv).r;
+      vec3 nextPos = position + normal * scale * z;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(nextPos, 1.0);
     }
   </script>
 
   <script id="fragmentShader" type="x-shader/x-fragment">
-    uniform sampler2D height;
     uniform sampler2D surface;
     varying vec2 vUv;
-    varying float vAmount;
 
     void main () {
       gl_FragColor = texture2D(surface, vUv);
