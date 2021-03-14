@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf8'>
-  <title>emotions</title>
+  <title>MXTX</title>
   <link rel="preload" href="fonts/RoadRage.woff2" as="font" type="font/woff2" crossorigin>
   <style>
     body, #root {
@@ -72,7 +72,7 @@
     }
   </script>
 
-  <script src='../../js/vendor/three.r115.min.js'></script>
+  <script src='./js/vendor/three.r115.min.js'></script>
   <script>
     // MXTX in front of rotating venus
     const getById = document.getElementById.bind(document)
@@ -103,8 +103,8 @@
 
     const uniforms = {
       scale: { type: 'f', value: 10.0 },
-      height: { type: 't', value: loadTex(`../img/planets/venus/venusbump.jpg`) },
-      surface: { type: 't', value: loadTex(`../img/planets/venus/venusmap.jpg`) }
+      height: { type: 't', value: loadTex(`./img/venusbump.jpg`) },
+      surface: { type: 't', value: loadTex(`./img/venusmap.jpg`) }
     }
     uniforms.height.value.wrapS = THREE.ClampToEdgeWrapping
     uniforms.surface.value.wrapT = THREE.ClampToEdgeWrapping
