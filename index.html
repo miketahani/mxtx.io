@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf8'>
+  <title>emotions</title>
+  <link rel="preload" href="fonts/RoadRage.woff2" as="font" type="font/woff2" crossorigin>
+  <style>
+    body, #root {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    @font-face {
+      font-family: 'RoadRage';
+      src: url('fonts/RoadRage.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    #background, #foreground {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #foreground {
+      font-family: 'RoadRage';
+      font-size: 15rem;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <div id="background"></div>
+    <div id="foreground">MXTX</div>
+  </div>
+
+
+  <script id="vertexShader" type="x-shader/x-vertex">
+    uniform sampler2D height;
+    uniform sampler2D surface;
+    uniform float scale;
+    varying vec2 vUv;
+    varying float vAmount;
+
+    void main () {
+      vUv = uv;
+      vAmount = texture2D(height, vUv).r;
+      vec3 newPosition = position + normal * scale * vAmount;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+    }
+  </script>
+
+  <script id="fragmentShader" type="x-shader/x-fragment">
+    uniform sampler2D height;
+    uniform sampler2D surface;
+    varying vec2 vUv;
+    varying float vAmount;
+
+    void main () {
+      gl_FragColor = texture2D(surface, vUv);
+    }
+  </script>
+
+  <script src='../../js/vendor/three.r115.min.js'></script>
+  <script>
+    // MXTX in front of rotating venus
+    const getById = document.getElementById.bind(document)
+    const loadTex = url => new THREE.TextureLoader().load(url);
+
+    let scene, camera, renderer
+
+    let width, height
+    function resize () {
+      width = window.innerWidth
+      height = window.innerHeight
+      camera.aspect = width / height
+      camera.updateProjectionMatrix()
+      renderer.setSize(width, height)
+    }
+
+    scene = new THREE.Scene()
+    camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 500)
+
+    renderer = new THREE.WebGLRenderer()
+    renderer.setSize(width, height)
+    getById('root').appendChild(renderer.domElement)
+
+    camera.position.z = 300
+
+    const container = new THREE.Object3D()
+    scene.add(container)
+
+    const uniforms = {
+      scale: { type: 'f', value: 10.0 },
+      height: { type: 't', value: loadTex(`../img/planets/venus/venusbump.jpg`) },
+      surface: { type: 't', value: loadTex(`../img/planets/venus/venusmap.jpg`) }
+    }
+    uniforms.height.value.wrapS = THREE.ClampToEdgeWrapping
+    uniforms.surface.value.wrapT = THREE.ClampToEdgeWrapping
+
+    const geometry = new THREE.SphereGeometry(128, 512, 512)
+    const material = new THREE.ShaderMaterial({
+      uniforms,
+      vertexShader: getById('vertexShader').textContent,
+      fragmentShader: getById('fragmentShader').textContent,
+      side: THREE.DoubleSide
+    })
+
+    const sphere = new THREE.Mesh(geometry, material)
+    container.add(sphere)
+
+    function render (t) {
+      requestAnimationFrame(render)
+      container.rotation.y += 0.01
+      renderer.render(scene, camera)
+    }
+
+
+    ;(function main () {
+      resize()
+      window.addEventListener('resize', resize)
+      requestAnimationFrame(render)
+    })();
+
+  </script>
+</body>
+</html>
